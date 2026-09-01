@@ -1,0 +1,23 @@
+import {Pool} from 'pg';
+import express from 'express';
+
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+
+const pool = new Pool({connectionString: process.env.DATABASE_URL})
+
+pool.connect()
+  .then((client) => {
+    console.log("database connected");
+    client.release(); // Always release the client back to the pool
+    
+    app.listen(PORT, () => {
+      console.log("3k running");
+    });
+  })
+  .catch((error) => {
+    console.log("failed connection", error);
+  });
