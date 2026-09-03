@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "tsx watch index.ts"
+    "dev": "tsx watch index.ts",
+    "db:migrate": "tsx ./scripts/run-migrations.ts"
   },
   "keywords": [],
   "author": "",
@@ -15,15 +16,17 @@
   "type": "module",
   "devDependencies": {
     "@types/express": "^5.0.6",
-    "@types/node": "^26.4.0",
+    "@types/node": "^26.4.1",
     "@types/pg": "^8.23.1",
     "nodemon": "^3.1.14",
     "ts-node-dev": "^2.0.0",
-    "tsx": "^4.23.12",
+    "tsx": "^4.23.13",
     "typescript": "^7.0.2"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "pg": "^8.23.0",
     "px": "^0.1.2"
   }
 }
