@@ -20,4 +20,25 @@ export class UserController{
             res.status(400).json({error: error.message});
         }
     }
+
+    login = async(req:Request,res:Response)=>{
+        try{
+            const {email,password} = req.body;
+
+            console.log(email,password);
+
+            if(!email || !password){
+                console.log("missing credetials for login")
+            }
+
+            const user = await this.userService.loginUser(email,password);
+
+            return res.status(200).json({
+                message: "Succesful login",
+                data: user
+            });
+        }catch(error: any){
+            return res.status(401).json({error: error.message});
+        }
+    }
 }

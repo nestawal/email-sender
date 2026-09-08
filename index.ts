@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import {Pool} from 'pg';
 import express from 'express';
-import userRoute from "./routes/userRoutes.js"
+import v1Routes from "./routes/v1Routes.js"
 
 dotenv.config();
 
@@ -10,9 +10,9 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.use("/api",userRoute);
+app.use("/api/v1",v1Routes);
 
-const pool = new Pool({connectionString: process.env.DATABASE_URL})
+const pool = new Pool({connectionString: process.env.DATABASE_URL});
 
 pool.connect()
   .then((client) => {

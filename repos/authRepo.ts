@@ -11,6 +11,6 @@ export class UserRepo{
     };
 
     findByEmail(email: string){
-        return queryOne('SELECT id, email, name FROM users WHERE email = $1', [email]);
+        return queryOne('SELECT id, email, name,password FROM users WHERE email = $1', [email]);
     }
 }
