@@ -3,7 +3,7 @@ import { UserRepo } from "../repos/authRepo.js";
 export class UserService{
     private userRepo = new UserRepo();
 
-    async createUser(name: string,password: string,email: string){
+    async createUser(email: string,name: string,password: string){
         const oldUser = await this.userRepo.findByEmail(email)
 
         if(oldUser){
@@ -11,7 +11,7 @@ export class UserService{
         }
 
         return await this.userRepo.createUser(email,name,password);
-    }
+    };
 
     async loginUser(email: string,password: string){
         const goodMail = email.toLowerCase().trim();
@@ -26,5 +26,5 @@ export class UserService{
         }else{
             return{id: oldUser.id,email: oldUser.email}
         }
-    }
+    };
 }

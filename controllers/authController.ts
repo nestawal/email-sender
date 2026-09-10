@@ -14,7 +14,7 @@ export class UserController{
             }
 
             console.log(req.body)
-            const newUser = await this.userService.createUser(name,email,password);
+            const newUser = await this.userService.createUser(email,name,password);
             res.status(201).json({message: "User creation succesful", data:newUser})
         }catch(error:any){
             res.status(400).json({error: error.message});
