@@ -4,6 +4,8 @@ import {CampaignCont} from "../controllers/campaignCont.js";
 const router = Router();
 const campaignCont = new CampaignCont();
 
-router.post("/postDraft",campaignCont.postDraft);
+router.post("/createDraft",campaignCont.createDraft);
+router.patch("/updateHandle",campaignCont.handleUpdates);
+router.delete("/deleteDraft",campaignCont.deleteDraft);
 
 export default router

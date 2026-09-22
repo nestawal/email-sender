@@ -24,8 +24,11 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "bullmq": "^6.3.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "ioredis": "^6.0.0",
+    "nodemailer": "^10.0.10",
     "pg": "^8.23.0",
     "px": "^0.1.2"
   }
