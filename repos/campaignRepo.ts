@@ -40,4 +40,8 @@ export class CampaignRepo{
         return queryOne("DELETE FROM campaign WHERE id=$1 RETURNING *",[id]);
     }
 
+    async updateStatus(id:number,status:string){
+        return queryOne("UPDATE campaign SET status = $2 where id = $1 RETURNING *",[id,status])
+    }
+
 }

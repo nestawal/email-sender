@@ -2,6 +2,8 @@ import "dotenv/config";
 import {Worker,Job} from "bullmq";
 import {Redis} from "ioredis";
 import { CampaignService } from "../services/campaignService.js";
+import { CampaignRepo } from "../repos/campaignRepo.js";
+import { NodeMailer } from "../providers/NodeMailerAdapter.js";
 
 const connection = new Redis({
     host: process.env.REDIS_HOST,
@@ -9,23 +11,29 @@ const connection = new Redis({
     maxRetriesPerRequest: null
 });
 
-export const emailWorker = new Worker(
-    "email-campaign-queue",
-    async(job: Job) => {
-        const {campaignId} = job.data;
+export const emailWorker = new Worker("email-campaign", async (job) => {
+    const { campaignId } = job.data;
+    const campaignRepo = new CampaignRepo();
+    const provider = new NodeMailer();
 
-        console.log(`[Worker] Picked up job ${job.id}. Processing campaign #${campaignId}...`);
+    const campaign = await campaignRepo.findById(campaignId);
+    if (!campaign) throw new Error("Campaign not found");
 
-       //process sending in campaign service
+    // 1. mark as actively sending
+    await campaignRepo.updateStatus(campaignId, "sending");
 
-
-        console.log(`[Worker] Successfully finished campaign #${campaignId}!`);
-    },
-    {
-        connection,
-        concurrency: 5
+    // 2. send to every recipient
+    for (const recipient of campaign.recipients) {
+        await provider.send({
+            to: recipient,
+            subject: campaign.title,
+            body: campaign.email,
+        });
     }
-);
+
+    // 3. mark as done
+    await campaignRepo.updateStatus(campaignId, "sent");
+}, { connection,concurrency: 5 });
 
 emailWorker.on('completed', (job) => {
   console.log(`[Worker] Job ${job.id} completed successfully.`);

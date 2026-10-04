@@ -11,8 +11,8 @@ export class NodeMailer implements EmailProvider{
         }
     });
 
-    async send(options: SendEmailOptions){
-        return await this.transporter.sendMail({
+    async send(options: SendEmailOptions):Promise<void>{
+        await this.transporter.sendMail({
             from: process.env.EMAIL_FROM,
             to: options.to,
             subject: options.subject,
