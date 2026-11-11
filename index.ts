@@ -1,9 +1,10 @@
-import dotenv from "dotenv";
+import "dotenv/config";
 import {Pool} from 'pg';
 import express from 'express';
 import v1Routes from "./routes/v1Routes.js"
+import "./workers/emailWorker.js"
 
-dotenv.config();
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;

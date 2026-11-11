@@ -11,10 +11,12 @@ const connection = new Redis({
     maxRetriesPerRequest: null
 });
 
+const campaignRepo = new CampaignRepo();
+const provider = new NodeMailer();
+
 export const emailWorker = new Worker("email-campaign", async (job) => {
     const { campaignId } = job.data;
-    const campaignRepo = new CampaignRepo();
-    const provider = new NodeMailer();
+    
 
     const campaign = await campaignRepo.findById(campaignId);
     if (!campaign) throw new Error("Campaign not found");
@@ -39,6 +41,18 @@ emailWorker.on('completed', (job) => {
   console.log(`[Worker] Job ${job.id} completed successfully.`);
 });
 
-emailWorker.on('failed', (job, err) => {
+emailWorker.on('failed', async(job, err) => {
   console.error(`[Worker] Job ${job?.id} failed with error: ${err.message}`);
+
+  if(!job)return;
+
+  const maxAttempts = job.opts.attempts ?? 1;
+  const willRetry = job.attemptsMade < maxAttempts;
+  if(willRetry){
+    console.log(`[Worker] Attempt ${job.attemptsMade}/${maxAttempts}, retry...`)
+    return;
+  }
+
+  const repo = new CampaignRepo();
+  await repo.updateStatus(job.data.campaignId,"failed");
 });

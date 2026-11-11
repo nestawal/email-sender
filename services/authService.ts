@@ -1,17 +1,17 @@
+import bcrypt from "bcrypt";
 import { UserRepo } from "../repos/authRepo.js";
 
 export class UserService{
     private userRepo = new UserRepo();
 
-    async createUser(email: string,name: string,password: string){
-        const oldUser = await this.userRepo.findByEmail(email)
+    async createUser(email: string, name: string, password: string) {
+        const normalized = email.toLowerCase().trim();
+        const oldUser = await this.userRepo.findByEmail(normalized);
+        if (oldUser) throw new Error("Email already registered");
 
-        if(oldUser){
-            throw new Error("User already exists cant create");
-        }
-
-        return await this.userRepo.createUser(email,name,password);
-    };
+        const hash = await bcrypt.hash(password, 12);   // ← HASH
+        return await this.userRepo.createUser(normalized, name, hash);
+    }
 
     async loginUser(email: string,password: string){
         const goodMail = email.toLowerCase().trim();
@@ -21,10 +21,11 @@ export class UserService{
             throw new Error("User doesn't exist try to log in")
         }
 
-        if(password !== oldUser.password){
-            throw new Error("Wrong password try again");
-        }else{
-            return{id: oldUser.id,email: oldUser.email}
+         const ok = await bcrypt.compare(password, oldUser.password);
+        if (!ok) {
+            throw new Error("Invalid credentials");
         }
+
+        return { id: oldUser.id, email: oldUser.email };
     };
 }

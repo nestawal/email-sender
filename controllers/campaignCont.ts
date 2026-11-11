@@ -26,6 +26,7 @@ export class CampaignCont{
             const post = await this.campaignService.checkPostId(id);
             if(!post){
                 res.status(404).json({error : "No draft exists with that ID"});
+                return;
             }
 
             let updatedPost = post;
@@ -47,7 +48,7 @@ export class CampaignCont{
             }
 
             if(!hasChanges){
-                res.status(404).json({message : "No draft exists with that ID",data: post});
+                res.status(200).json({ message: "No changes to apply", data: post });
                 return;
             }
 
@@ -63,9 +64,12 @@ export class CampaignCont{
             const {id} = req.body;
             const post = await this.campaignService.deleteDraft(id);
 
-            if(post){
-                res.status(200).json({message:`post ${id} was deleted succesfully`});
+            
+            if(!post){
+               res.status(404).json({ error: "No draft exists with that ID" });
+               return;
             }
+            res.status(200).json({message:`post ${id} was deleted succesfully`});
         }catch(error:any){
              res.status(400).json({ error: error.message });
         }
