@@ -13,19 +13,27 @@ export class UserService{
         return await this.userRepo.createUser(normalized, name, hash);
     }
 
-    async loginUser(email: string,password: string){
-        const goodMail = email.toLowerCase().trim();
-        const oldUser = await this.userRepo.findByEmail(goodMail);
+    async loginUser(email: string, password: string) {
+    console.log(">>> loginUser called, email:", email);                    
 
-        if(!oldUser){
-            throw new Error("User doesn't exist try to log in")
-        }
+    const goodMail = email.toLowerCase().trim();
+    const oldUser = await this.userRepo.findByEmail(goodMail);
 
-         const ok = await bcrypt.compare(password, oldUser.password);
-        if (!ok) {
-            throw new Error("Invalid credentials");
-        }
+    console.log(">>> user found:", oldUser ? "yes" : "no");                 
 
-        return { id: oldUser.id, email: oldUser.email };
-    };
+    if (!oldUser) {
+        throw new Error("User doesn't exist try to log in");
+    }
+
+    console.log(">>> stored hash prefix:", oldUser.password.slice(0, 7));   
+
+    const ok = await bcrypt.compare(password, oldUser.password);
+    console.log(">>> bcrypt.compare:", ok);                                 
+
+    if (!ok) {
+        throw new Error("Invalid credentials");
+    }
+
+    return { id: oldUser.id, email: oldUser.email };
+}
 }

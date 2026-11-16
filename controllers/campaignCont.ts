@@ -74,4 +74,18 @@ export class CampaignCont{
              res.status(400).json({ error: error.message });
         }
     }
+
+    sendCampaign = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const id = Number(req.params.id);
+            if (!Number.isInteger(id)) {
+                res.status(400).json({ error: "Invalid campaign id" });
+                return;
+            }
+            const campaign = await this.campaignService.sendCampaign(id);
+            res.status(202).json({ message: "Campaign queued", data: campaign });
+        } catch (err: any) {
+            res.status(400).json({ error: err.message });
+        }
+    };
 }
